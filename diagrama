@@ -1,0 +1,37 @@
+flowchart TD
+    subgraph Hive[Model Outputs en Hive]
+        H1[(Hive Table Model 1)] -->|Datos crudos| SPARK
+        H2[(Hive Table Model 2)] -->|Datos crudos| SPARK
+        H3[(Hive Table ...)] -->|Datos crudos| SPARK
+    end
+
+    subgraph Metadata[Registro de Metadata]
+        META[(PostgreSQL/Hive)] -->|Configuración de modelos| AIRFLOW
+        META -->|Schema Mapping| SPARK
+    end
+
+    subgraph Spark[Procesamiento ETL]
+        SPARK[[Spark Job]] -->|Transforma datos| MONGODB
+        SPARK -->|Actualiza metadata| META
+    end
+
+    subgraph Airflow[Orquestación]
+        AIRFLOW[[Airflow DAGs]] -->|Programa ejecución| SPARK
+        AIRFLOW -->|Monitorización| LOGS[(Logs)]
+    end
+
+    subgraph MongoDB[Consolidación Final]
+        MONGODB[(Colección\nunified_scores)] -->|Scores unificados| API[API/Frontend]
+    end
+
+    subgraph Onboarding[Onboarding de Modelos]
+        USER[Usuario/Negocio] -->|Registra nuevo modelo| META
+        USER -->|Sube mapping| S3[(Bucket S3/HDFS)]
+    end
+
+    classDef db fill:#4CAF50,color:white;
+    classDef process fill:#2196F3,color:white;
+    classDef tool fill:#FF9800,color:black;
+    class H1,H2,H3,MONGODB,META,S3 db
+    class SPARK,AIRFLOW,API process
+    class USER,LOGS tool
