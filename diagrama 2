@@ -1,0 +1,32 @@
+flowchart TD
+    subgraph HDFS[HDFS/Hive]
+        H1[(Modelo 1)] -->|Tabla Hive| ABINITIO
+        H2[(Modelo 2)] -->|Tabla Hive| ABINITIO
+        H3[(Modelo N)] -->|Tabla Hive| ABINITIO
+    end
+
+    subgraph Metadata[Metadata]
+        META[(Base de Datos)] -->|Configuración| ABINITIO
+    end
+
+    subgraph AbInitio[Ab Initio]
+        ABINITIO[[Graph ETL]] -->|Lectura| HDFS
+        ABINITIO -->|Transformación| TRANSFORM[Componentes de Transformación]
+        TRANSFORM -->|Escritura| MONGODB
+    end
+
+    subgraph MongoDB[MongoDB]
+        MONGODB[(Colección\nunified_scores)]
+    end
+
+    subgraph Control[Control de Flujo]
+        SCHEDULER[[Scheduler (Control Center)]] -->|Ejecuta| ABINITIO
+        LOGS[(Logs y Auditoría)]
+    end
+
+    classDef storage fill:#4CAF50,color:white;
+    classDef tool fill:#2196F3,color:white;
+    classDef process fill:#FF9800,color:black;
+    class H1,H2,H3,MONGODB,META storage
+    class ABINITIO,SCHEDULER tool
+    class TRANSFORM,LOGS process
